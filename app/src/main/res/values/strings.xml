@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Weather</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="add_city">add city</string>
+    <string name="enter_the_city">Enter the city</string>
+    <string name="city_exists"> already exists.</string>
+    <string name="invalid_city_name">Not valid city name</string>
+</resources>
