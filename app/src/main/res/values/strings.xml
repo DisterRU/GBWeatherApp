@@ -4,6 +4,9 @@
 
     <string name="add_city">add city</string>
     <string name="enter_the_city">Enter the city</string>
-    <string name="city_exists"> already exists.</string>
+    <string name="city_added">has been added</string>
+    <string name="city_exists">already exists</string>
     <string name="invalid_city_name">Not valid city name</string>
+
+    <string name="celsius" translatable="false">℃</string>
 </resources>

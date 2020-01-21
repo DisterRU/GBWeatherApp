@@ -7,10 +7,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.kachalov.weather.R
@@ -39,13 +38,17 @@ class AddCityFragment : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initButton()
-        initEditText()
         super.onViewCreated(view, savedInstanceState)
     }
 
     override fun onAttach(context: Context) {
         initCities(context)
         super.onAttach(context)
+    }
+
+    override fun onDetach() {
+        saveCities()
+        super.onDetach()
     }
 
     private fun initCities(context: Context) {
@@ -60,42 +63,69 @@ class AddCityFragment : BottomSheetDialogFragment() {
         }
     }
 
+    private fun saveCities() {
+        val gson = Gson()
+        val json = gson.toJson(cities)
+        preferences.edit()
+            .putString(Keys.CITIES, json)
+            .apply()
+    }
+
     private fun initButton() {
-        cityNameInput.setOnClickListener {
+        addCityButton.setOnClickListener {
             val cityName = cityNameInput.text.toString()
-            if (cities.none { it.name == cityName }) {
-                val city = City(
-                    name = cityName,
-                    temp = nextInt(0, 30),
-                    icon = when (nextInt(0, 3)) {
-                        0 -> R.drawable.sun
-                        1 -> R.drawable.cloud
-                        else -> R.drawable.rain
-                    },
-                    pressure = nextInt(730, 760)
-                )
-                cities.add(city)
-            } else {
-                Toast.makeText(
-                    activity,
-                    "$cityName " + resources.getString(R.string.city_exists),
-                    Toast.LENGTH_LONG
+            val isValid = validateCityName(cityName)
+
+            if (!isValid) {
+                return@setOnClickListener
+            }
+
+            val isExist = isExistCityName(cityName)
+
+            if (isExist) {
+                return@setOnClickListener
+            }
+
+            val city = City(
+                name = cityName,
+                temp = nextInt(0, 30),
+                icon = when (nextInt(0, 3)) {
+                    0 -> R.drawable.sun
+                    1 -> R.drawable.cloud
+                    else -> R.drawable.rain
+                },
+                pressure = nextInt(730, 760)
+            )
+            cities.add(city)
+            dismiss()
+
+            activity?.let {
+                Snackbar.make(
+                    it.findViewById(R.id.fragment_container),
+                    cityName + " " + resources.getString(R.string.city_added),
+                    Snackbar.LENGTH_SHORT
                 ).show()
             }
-            dismiss()
         }
     }
 
-    private fun initEditText() {
-        cityNameInput.setOnFocusChangeListener { view, hasFocus ->
-            if (!hasFocus) {
-                val text = (view as TextView).text
-                if (!Pattern.CITY_NAME.toRegex().matches(text)) {
-                    cityNameLayout.error = resources.getString(R.string.invalid_city_name)
-                } else {
-                    cityNameLayout.error = null
-                }
-            }
+    private fun isExistCityName(city: String): Boolean {
+        return if (cities.any { it.name == city }) {
+            cityNameLayout.error = city + " " + resources.getString(R.string.city_exists)
+            true
+        } else {
+            cityNameLayout.error = null
+            false
+        }
+    }
+
+    private fun validateCityName(city: String): Boolean {
+        return if (!Pattern.CITY_NAME.toRegex().matches(city)) {
+            cityNameLayout.error = resources.getString(R.string.invalid_city_name)
+            false
+        } else {
+            cityNameLayout.error = null
+            true
         }
     }
 }
