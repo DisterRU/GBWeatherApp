@@ -15,6 +15,7 @@ import com.kachalov.weather.constants.Dialogs
 import com.kachalov.weather.constants.Fragments
 import com.kachalov.weather.constants.Keys
 import com.kachalov.weather.constants.Preferences
+import com.kachalov.weather.observers.CitiesObserver
 import com.kachalov.weather.persistence.City
 import com.kachalov.weather.utils.FragmentChanger
 import kotlinx.android.synthetic.main.fragment_cities.*
@@ -50,8 +51,8 @@ class CitiesFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        initButton()
         initRecycler()
+        initButton()
         super.onViewCreated(view, savedInstanceState)
     }
 
@@ -62,7 +63,10 @@ class CitiesFragment : Fragment() {
 
     private fun initButton() {
         addCityFloatingButton.setOnClickListener {
-            fragmentChanger?.showDialog(Dialogs.ADD_CITY)
+            fragmentChanger?.showDialog(
+                Dialogs.ADD_CITY,
+                listOf(citiesRecycler.adapter as CitiesObserver)
+            )
         }
     }
 

@@ -16,13 +16,17 @@ import com.kachalov.weather.R
 import com.kachalov.weather.constants.Keys
 import com.kachalov.weather.constants.Pattern
 import com.kachalov.weather.constants.Preferences
+import com.kachalov.weather.observers.CitiesChanger
+import com.kachalov.weather.observers.CitiesObserver
 import com.kachalov.weather.persistence.City
 import kotlinx.android.synthetic.main.fragment_add_city.*
 import kotlin.random.Random.Default.nextInt
 
-class AddCityFragment : BottomSheetDialogFragment() {
+class AddCityFragment : BottomSheetDialogFragment(), CitiesChanger {
     private lateinit var preferences: SharedPreferences
     private lateinit var cities: MutableList<City>
+
+    private val observers: MutableList<CitiesObserver> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,6 +101,7 @@ class AddCityFragment : BottomSheetDialogFragment() {
                 pressure = nextInt(730, 760)
             )
             cities.add(city)
+            notifyObservers()
             dismiss()
 
             activity?.let {
@@ -127,5 +132,17 @@ class AddCityFragment : BottomSheetDialogFragment() {
             cityNameLayout.error = null
             true
         }
+    }
+
+    override fun addObserver(observer: CitiesObserver) {
+        observers.add(observer)
+    }
+
+    override fun removeObserver(observer: CitiesObserver) {
+        observers.remove(observer)
+    }
+
+    override fun notifyObservers() {
+        observers.forEach { it.updateCities(cities) }
     }
 }

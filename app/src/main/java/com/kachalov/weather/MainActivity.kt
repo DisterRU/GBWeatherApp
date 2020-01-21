@@ -7,6 +7,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.kachalov.weather.constants.Fragments
 import com.kachalov.weather.constants.Preferences
+import com.kachalov.weather.observers.CitiesObserver
 import com.kachalov.weather.utils.FragmentChanger
 import com.kachalov.weather.utils.FragmentFinder
 import kotlinx.android.synthetic.main.activity_main.*
@@ -47,7 +48,7 @@ class MainActivity : AppCompatActivity(), FragmentChanger {
 
     override fun changeFragment(tag: String, args: Bundle?, addToBackStack: Boolean) {
         val transaction = supportFragmentManager.beginTransaction()
-        val fragment = fragmentFinder.getFragment(tag, args)
+        val fragment = fragmentFinder.findFragment(tag, args)
         transaction.replace(R.id.fragment_container, fragment, tag)
         if (addToBackStack) {
             transaction.addToBackStack(null)
@@ -55,8 +56,8 @@ class MainActivity : AppCompatActivity(), FragmentChanger {
         transaction.commitAllowingStateLoss()
     }
 
-    override fun showDialog(tag: String) {
-        val dialog = fragmentFinder.getDialog(tag)
+    override fun showDialog(tag: String, observers: List<CitiesObserver>) {
+        val dialog = fragmentFinder.showDialog(tag, observers)
         dialog.show(supportFragmentManager, tag)
     }
 }
