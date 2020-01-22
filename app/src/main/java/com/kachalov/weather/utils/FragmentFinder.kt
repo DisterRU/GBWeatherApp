@@ -15,7 +15,6 @@ class FragmentFinder(private val fragmentManager: FragmentManager) {
         val fragment = fragmentManager.findFragmentByTag(tag) ?: when (tag) {
             Fragments.CITIES -> CitiesFragment()
 //            Fragments.CITY_INFO -> CityInfoFragment()
-//            Fragments.SETTINGS -> SettingsFragment()
             else -> throw RuntimeException("Invalid fragment tag")
         }
         if (args != null) {

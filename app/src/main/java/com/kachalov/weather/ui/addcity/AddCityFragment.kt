@@ -7,14 +7,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.DialogFragment
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.kachalov.weather.R
 import com.kachalov.weather.constants.Keys
-import com.kachalov.weather.constants.Pattern
+import com.kachalov.weather.constants.Patterns
 import com.kachalov.weather.constants.Preferences
 import com.kachalov.weather.observers.CitiesChanger
 import com.kachalov.weather.observers.CitiesObserver
@@ -23,15 +22,11 @@ import kotlinx.android.synthetic.main.fragment_add_city.*
 import kotlin.random.Random.Default.nextInt
 
 class AddCityFragment : BottomSheetDialogFragment(), CitiesChanger {
-    private lateinit var preferences: SharedPreferences
+    private var citiesPreferences: SharedPreferences? = null
+    private var themesPreferences: SharedPreferences? = null
     private lateinit var cities: MutableList<City>
 
     private val observers: MutableList<CitiesObserver> = mutableListOf()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setStyle(DialogFragment.STYLE_NORMAL, R.style.DialogStyle)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,19 +41,35 @@ class AddCityFragment : BottomSheetDialogFragment(), CitiesChanger {
     }
 
     override fun onAttach(context: Context) {
+        initPreferences(context)
         initCities(context)
         super.onAttach(context)
     }
 
+    private fun initPreferences(context: Context) {
+        citiesPreferences = context.getSharedPreferences(Preferences.CITIES, Context.MODE_PRIVATE)
+        themesPreferences = context.getSharedPreferences(Preferences.THEMES, Context.MODE_PRIVATE)
+    }
+
+//    private fun setStyle() {
+//        val darkTheme = themesPreferences?.getBoolean(Keys.IS_DARK_THEME, false) ?: false
+//        if (darkTheme) {
+//            setStyle(DialogFragment.STYLE_NORMAL, R.style.DialogStyleDark)
+//        } else {
+//            setStyle(DialogFragment.STYLE_NORMAL, R.style.DialogStyle)
+//        }
+//    }
+
     override fun onDetach() {
         saveCities()
+        citiesPreferences = null
+        themesPreferences = null
         super.onDetach()
     }
 
     private fun initCities(context: Context) {
-        preferences = context.getSharedPreferences(Preferences.CITIES, Context.MODE_PRIVATE)
         val gson = Gson()
-        val json = preferences.getString(Keys.CITIES, "")
+        val json = citiesPreferences?.getString(Keys.CITIES, "")
         cities = if (json.isNullOrBlank()) {
             mutableListOf()
         } else {
@@ -72,9 +83,9 @@ class AddCityFragment : BottomSheetDialogFragment(), CitiesChanger {
     private fun saveCities() {
         val gson = Gson()
         val json = gson.toJson(cities)
-        preferences.edit()
-            .putString(Keys.CITIES, json)
-            .apply()
+        citiesPreferences?.edit()
+            ?.putString(Keys.CITIES, json)
+            ?.apply()
     }
 
     private fun initButton() {
@@ -127,7 +138,7 @@ class AddCityFragment : BottomSheetDialogFragment(), CitiesChanger {
     }
 
     private fun validateCityName(city: String): Boolean {
-        return if (!Pattern.CITY_NAME.toRegex().matches(city)) {
+        return if (!Patterns.CITY_NAME.toRegex().matches(city)) {
             cityNameLayout.error = resources.getString(R.string.invalid_city_name)
             false
         } else {
