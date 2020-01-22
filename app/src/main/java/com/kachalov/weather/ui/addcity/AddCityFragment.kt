@@ -67,6 +67,8 @@ class AddCityFragment : BottomSheetDialogFragment(), CitiesChanger {
         }
     }
 
+
+    //TODO: REWORK
     private fun saveCities() {
         val gson = Gson()
         val json = gson.toJson(cities)
@@ -143,6 +145,6 @@ class AddCityFragment : BottomSheetDialogFragment(), CitiesChanger {
     }
 
     override fun notifyObservers() {
-        observers.forEach { it.updateCities(cities) }
+        observers.forEach { it.updateCities() }
     }
 }

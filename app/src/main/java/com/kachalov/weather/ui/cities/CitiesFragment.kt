@@ -20,12 +20,11 @@ import com.kachalov.weather.persistence.City
 import com.kachalov.weather.utils.FragmentChanger
 import kotlinx.android.synthetic.main.fragment_cities.*
 
-class CitiesFragment : Fragment() {
-    private var fragmentChanger: FragmentChanger? = null
-    private lateinit var cities: List<City>
+class CitiesFragment : Fragment(), CitiesObserver {
     private lateinit var preferences: SharedPreferences
 
-
+    private var fragmentChanger: FragmentChanger? = null
+    private val adapter by lazy { CitiesAdapter(getCities(), onListItemClickListener) }
     private val onListItemClickListener = object : CitiesAdapter.OnListItemClickListener {
         override fun onItemClick(currentCity: City) {
             fragmentChanger?.changeFragment(
@@ -38,7 +37,7 @@ class CitiesFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         initFragmentChanger(context)
-        initCities(context)
+        initPreferences(context)
         super.onAttach(context)
     }
 
@@ -65,21 +64,13 @@ class CitiesFragment : Fragment() {
         addCityFloatingButton.setOnClickListener {
             fragmentChanger?.showDialog(
                 Dialogs.ADD_CITY,
-                listOf(citiesRecycler.adapter as CitiesObserver)
+                listOf(this@CitiesFragment)
             )
         }
     }
 
-    private fun initCities(context: Context) {
+    private fun initPreferences(context: Context) {
         preferences = context.getSharedPreferences(Preferences.CITIES, Context.MODE_PRIVATE)
-        val json = preferences.getString(Keys.CITIES, "")
-        cities = if (json.isNullOrBlank()) {
-            listOf()
-        } else {
-            val gson = Gson()
-            val type = object : TypeToken<List<City>>() {}.type
-            gson.fromJson(json, type)
-        }
     }
 
     private fun initFragmentChanger(context: Context) {
@@ -89,8 +80,24 @@ class CitiesFragment : Fragment() {
     }
 
     private fun initRecycler() {
-        citiesRecycler.adapter = CitiesAdapter(cities, onListItemClickListener)
+        citiesRecycler.adapter = adapter
         citiesRecycler.layoutManager = LinearLayoutManager(context)
         citiesRecycler.addItemDecoration(CitiesDecorator(10))
+    }
+
+    override fun updateCities() {
+        val cities = getCities()
+        adapter.updateCities(cities)
+    }
+
+    private fun getCities(): List<City> {
+        val json = preferences.getString(Keys.CITIES, "")
+        return if (json.isNullOrBlank()) {
+            listOf()
+        } else {
+            val gson = Gson()
+            val type = object : TypeToken<List<City>>() {}.type
+            gson.fromJson(json, type)
+        }
     }
 }

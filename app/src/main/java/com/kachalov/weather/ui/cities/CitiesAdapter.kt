@@ -5,14 +5,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.kachalov.weather.R
-import com.kachalov.weather.observers.CitiesObserver
 import com.kachalov.weather.persistence.City
 import kotlinx.android.synthetic.main.item_city.view.*
 
 class CitiesAdapter(
     private var cities: List<City>,
     private val listener: OnListItemClickListener
-) : RecyclerView.Adapter<CitiesAdapter.CityHolder>(), CitiesObserver {
+) : RecyclerView.Adapter<CitiesAdapter.CityHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CityHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -26,7 +25,7 @@ class CitiesAdapter(
         holder.bind(cities[position])
     }
 
-    override fun updateCities(cities: List<City>) {
+    fun updateCities(cities: List<City>) {
         this.cities = cities
         notifyDataSetChanged()
     }
