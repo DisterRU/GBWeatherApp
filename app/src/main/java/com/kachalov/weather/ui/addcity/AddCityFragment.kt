@@ -42,7 +42,7 @@ class AddCityFragment : BottomSheetDialogFragment(), CitiesChanger {
 
     override fun onAttach(context: Context) {
         initPreferences(context)
-        initCities(context)
+        initCities()
         super.onAttach(context)
     }
 
@@ -51,23 +51,13 @@ class AddCityFragment : BottomSheetDialogFragment(), CitiesChanger {
         themesPreferences = context.getSharedPreferences(Preferences.THEMES, Context.MODE_PRIVATE)
     }
 
-//    private fun setStyle() {
-//        val darkTheme = themesPreferences?.getBoolean(Keys.IS_DARK_THEME, false) ?: false
-//        if (darkTheme) {
-//            setStyle(DialogFragment.STYLE_NORMAL, R.style.DialogStyleDark)
-//        } else {
-//            setStyle(DialogFragment.STYLE_NORMAL, R.style.DialogStyle)
-//        }
-//    }
-
     override fun onDetach() {
-        saveCities()
         citiesPreferences = null
         themesPreferences = null
         super.onDetach()
     }
 
-    private fun initCities(context: Context) {
+    private fun initCities() {
         val gson = Gson()
         val json = citiesPreferences?.getString(Keys.CITIES, "")
         cities = if (json.isNullOrBlank()) {
@@ -78,8 +68,6 @@ class AddCityFragment : BottomSheetDialogFragment(), CitiesChanger {
         }
     }
 
-
-    //TODO: REWORK
     private fun saveCities() {
         val gson = Gson()
         val json = gson.toJson(cities)
@@ -114,6 +102,7 @@ class AddCityFragment : BottomSheetDialogFragment(), CitiesChanger {
                 pressure = nextInt(730, 760)
             )
             cities.add(city)
+            saveCities()
             notifyObservers()
             dismiss()
 

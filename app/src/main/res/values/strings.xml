@@ -30,4 +30,5 @@
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="clear_cities">Clear cities</string>
+    <string name="weather_icon">Weather Icon</string>
 </resources>

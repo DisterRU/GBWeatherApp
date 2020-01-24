@@ -9,6 +9,7 @@ class SettingsActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
         initSwitch()
+        supportActionBar?.title = resources.getString(R.string.action_settings)
     }
 
     private fun initSwitch() {
