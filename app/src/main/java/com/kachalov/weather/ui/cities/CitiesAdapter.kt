@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.kachalov.weather.R
-import com.kachalov.weather.persistence.City
+import com.kachalov.weather.entities.City
 import kotlinx.android.synthetic.main.item_city.view.*
 
 class CitiesAdapter(

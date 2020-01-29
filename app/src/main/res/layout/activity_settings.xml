@@ -7,10 +7,31 @@
     android:orientation="vertical"
     tools:context=".SettingsActivity">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/app_settings"
+        android:textSize="20sp"
+        android:textStyle="italic|bold" />
+
     <Switch
         android:id="@+id/darkThemeSwitch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/dark_theme"
+        android:textSize="30sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/weather_settings"
+        android:textSize="20sp"
+        android:textStyle="italic|bold" />
+
+    <Switch
+        android:id="@+id/pressureSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/show_pressure"
         android:textSize="30sp" />
 </LinearLayout>

@@ -1,4 +1,4 @@
-package com.kachalov.weather.persistence
+package com.kachalov.weather.entities
 
 import java.io.Serializable
 

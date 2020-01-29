@@ -15,13 +15,14 @@ import com.kachalov.weather.constants.Dialogs
 import com.kachalov.weather.constants.Fragments
 import com.kachalov.weather.constants.Keys
 import com.kachalov.weather.constants.Preferences
+import com.kachalov.weather.entities.City
 import com.kachalov.weather.observers.CitiesObserver
-import com.kachalov.weather.persistence.City
 import com.kachalov.weather.utils.FragmentChanger
 import kotlinx.android.synthetic.main.fragment_cities.*
 
 class CitiesFragment : Fragment(), CitiesObserver {
-    private lateinit var preferences: SharedPreferences
+    private lateinit var citiesPreferences: SharedPreferences
+    private lateinit var weatherPreferences: SharedPreferences
 
     private var fragmentChanger: FragmentChanger? = null
     private val adapter by lazy { CitiesAdapter(getCities(), onListItemClickListener) }
@@ -29,7 +30,10 @@ class CitiesFragment : Fragment(), CitiesObserver {
         override fun onItemClick(currentCity: City) {
             fragmentChanger?.changeFragment(
                 tag = Fragments.CITY_INFO,
-                args = Bundle().apply { putSerializable(Keys.CURRENT_CITY, currentCity) },
+                args = Bundle().apply {
+                    putSerializable(Keys.CURRENT_CITY, currentCity)
+                    putBoolean(Keys.PRESSURE, weatherPreferences.getBoolean(Keys.PRESSURE, false))
+                },
                 addToBackStack = true
             )
         }
@@ -70,7 +74,8 @@ class CitiesFragment : Fragment(), CitiesObserver {
     }
 
     private fun initPreferences(context: Context) {
-        preferences = context.getSharedPreferences(Preferences.CITIES, Context.MODE_PRIVATE)
+        citiesPreferences = context.getSharedPreferences(Preferences.CITIES, Context.MODE_PRIVATE)
+        weatherPreferences = context.getSharedPreferences(Preferences.WEATHER, Context.MODE_PRIVATE)
     }
 
     private fun initFragmentChanger(context: Context) {
@@ -91,7 +96,7 @@ class CitiesFragment : Fragment(), CitiesObserver {
     }
 
     private fun getCities(): List<City> {
-        val json = preferences.getString(Keys.CITIES, "")
+        val json = citiesPreferences.getString(Keys.CITIES, "")
         return if (json.isNullOrBlank()) {
             listOf()
         } else {

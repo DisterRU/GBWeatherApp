@@ -1,17 +1,17 @@
 <resources>
 
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">@color/blueRibbon</item>
         <item name="bottomSheetDialogTheme">@style/DialogStyle</item>
         <item name="floatingActionButtonStyle">@style/FloatingButtonStyle</item>
+        <item name="android:textViewStyle">@style/TextViewLight</item>
         <item name="materialButtonStyle">@style/BlueMaterialButtonStyle</item>
         <item name="textInputStyle">@style/TextInputStyle</item>
     </style>
 
     <style name="AppDarkTheme" parent="Theme.MaterialComponents">
         <item name="bottomSheetDialogTheme">@style/DialogStyleDark</item>
+        <item name="android:textViewStyle">@style/TextViewDark</item>
         <item name="materialButtonStyle">@style/BlueMaterialButtonStyle</item>
         <item name="textInputStyle">@style/TextInputStyle</item>
     </style>
@@ -40,6 +40,14 @@
 
     <style name="BlueMaterialButtonStyle" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="android:backgroundTint">@color/blueRibbon</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="TextViewLight" parent="Widget.AppCompat.TextView">
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+    <style name="TextViewDark" parent="Widget.AppCompat.TextView">
         <item name="android:textColor">@android:color/white</item>
     </style>
 </resources>

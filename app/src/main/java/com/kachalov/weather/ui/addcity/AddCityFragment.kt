@@ -15,9 +15,9 @@ import com.kachalov.weather.R
 import com.kachalov.weather.constants.Keys
 import com.kachalov.weather.constants.Patterns
 import com.kachalov.weather.constants.Preferences
+import com.kachalov.weather.entities.City
 import com.kachalov.weather.observers.CitiesChanger
 import com.kachalov.weather.observers.CitiesObserver
-import com.kachalov.weather.persistence.City
 import kotlinx.android.synthetic.main.fragment_add_city.*
 import kotlin.random.Random.Default.nextInt
 
