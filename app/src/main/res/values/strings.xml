@@ -8,12 +8,12 @@
     <string name="invalid_city_name">Not valid city name</string>
     <string name="celsius" translatable="false">℃</string>
     <string name="clear_cities">Clear cities</string>
-    <string name="weather_icon">Weather Icon</string>
+    <string name="weather_icon" translatable="false">Weather Icon</string>
     <string name="app_settings">App Settings:</string>
     <string name="weather_settings">Weather Settings:</string>
     <string name="show_pressure">Show pressure</string>
     <string name="today">Today</string>
-    <string name="wiki_icon">Wiki Icon</string>
+    <string name="wiki_icon" translatable="false">Wiki Icon</string>
     <string name="dark_theme">Dark Theme</string>
-    <string name="mm">mm</string>
+    <string name="mm" translatable="false">mm</string>
 </resources>

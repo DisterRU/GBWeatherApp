@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="add_city">Добавить город</string>
+    <string name="action_settings">Настройки</string>
+    <string name="app_name">Погода</string>
+    <string name="app_settings">Настройки приложения:</string>
+    <string name="city_added">был добавлен</string>
+    <string name="city_exists">уже существует</string>
+    <string name="clear_cities">Очистить города</string>
+    <string name="dark_theme">Тёмная тема</string>
+    <string name="enter_the_city">Введите город</string>
+    <string name="invalid_city_name">Имя города некорректно</string>
+    <string name="show_pressure">Показать давление</string>
+    <string name="today">Сегодня</string>
+    <string name="weather_settings">Настройки погоды:</string>
+</resources>
