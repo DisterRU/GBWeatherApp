@@ -16,6 +16,7 @@ import com.kachalov.weather.constants.Keys
 import com.kachalov.weather.constants.Patterns
 import com.kachalov.weather.constants.Preferences
 import com.kachalov.weather.entities.City
+import com.kachalov.weather.entities.Forecast
 import com.kachalov.weather.observers.CitiesChanger
 import com.kachalov.weather.observers.CitiesObserver
 import kotlinx.android.synthetic.main.fragment_add_city.*
@@ -99,7 +100,18 @@ class AddCityFragment : BottomSheetDialogFragment(), CitiesChanger {
                     1 -> R.drawable.cloud
                     else -> R.drawable.rain
                 },
-                pressure = nextInt(730, 760)
+                pressure = nextInt(730, 760),
+                forecastList = listOf(
+                    Forecast("12.00", R.drawable.sun, 1),
+                    Forecast("15.00", R.drawable.cloud, 2),
+                    Forecast("18.00", R.drawable.rain, 3),
+                    Forecast("21.00", R.drawable.rain, 4),
+                    Forecast("00.00", R.drawable.sun, 5),
+                    Forecast("03.00", R.drawable.cloud, 6),
+                    Forecast("06.00", R.drawable.cloud, 7),
+                    Forecast("09.00", R.drawable.cloud, 8),
+                    Forecast("12.00", R.drawable.sun, 9)
+                )
             )
             cities.add(city)
             saveCities()

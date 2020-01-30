@@ -1,22 +1,23 @@
 package com.kachalov.weather.ui.cityinfo
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.kachalov.weather.R
 import com.kachalov.weather.constants.Keys
+import com.kachalov.weather.constants.Urls
 import com.kachalov.weather.entities.City
 import kotlinx.android.synthetic.main.fragment_city_info.*
-import java.util.*
 
 class CityInfoFragment : Fragment() {
     private lateinit var currentCity: City
     private var showPressure: Boolean = false
-
-    private val today = Calendar.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,7 +40,10 @@ class CityInfoFragment : Fragment() {
 
     private fun setForecastData() {
         forecastRecycler.layoutManager =
-            LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
+            LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        forecastRecycler.adapter = ForecastAdapter(currentCity.forecastList)
+        forecastRecycler.setHasFixedSize(true)
+        forecastRecycler.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.HORIZONTAL))
     }
 
     private fun setMainData() {
@@ -48,6 +52,19 @@ class CityInfoFragment : Fragment() {
         cityIcon.setImageResource(currentCity.icon)
         pressure.text = currentCity.pressure.toString()
         setPressureVisibility()
+        setCityNameOnClickListener()
+    }
+
+    private fun setCityNameOnClickListener() {
+        val language = context?.resources?.configuration?.locale?.language ?: "en"
+        cityName.setOnClickListener {
+            val intent = Intent(
+                Intent.ACTION_VIEW, Uri.parse(
+                    Urls.HTTPS + language + Urls.WIKI + currentCity.name
+                )
+            )
+            startActivity(intent)
+        }
     }
 
     private fun setPressureVisibility() {
