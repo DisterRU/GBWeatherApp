@@ -3,11 +3,14 @@ package com.kachalov.weather
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import com.kachalov.weather.constants.Codes
 import com.kachalov.weather.constants.Keys
 import com.kachalov.weather.constants.Preferences
+import com.kachalov.weather.livedata.PressureViewModel
 import kotlinx.android.synthetic.main.activity_settings.*
 
 class SettingsActivity : BaseActivity() {
+    private val pressureModel = PressureViewModel.INSTANCE
     private var pressurePreferences: SharedPreferences? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,6 +29,7 @@ class SettingsActivity : BaseActivity() {
         darkThemeSwitch.isChecked = isDarkTheme()
         darkThemeSwitch.setOnCheckedChangeListener { _, isChecked ->
             setDarkTheme(isChecked)
+            setResult(Codes.THEME_CODE)
             recreate()
         }
 
@@ -39,10 +43,11 @@ class SettingsActivity : BaseActivity() {
         pressurePreferences?.edit()
             ?.putBoolean(Keys.PRESSURE, showPressure)
             ?.apply()
+        pressureModel.pressure.value = showPressure
     }
 
     private fun getPressure(): Boolean {
-        return pressurePreferences?.getBoolean(Keys.PRESSURE, false) ?: false
+        return pressureModel.pressure.value ?: false
     }
 
     override fun onDestroy() {

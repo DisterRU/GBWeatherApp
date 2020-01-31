@@ -7,22 +7,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.kachalov.weather.R
 import com.kachalov.weather.constants.Dialogs
 import com.kachalov.weather.constants.Fragments
 import com.kachalov.weather.constants.Keys
 import com.kachalov.weather.constants.Preferences
 import com.kachalov.weather.entities.City
-import com.kachalov.weather.observers.CitiesObserver
+import com.kachalov.weather.livedata.CitiesViewModel
 import com.kachalov.weather.utils.FragmentChanger
 import kotlinx.android.synthetic.main.fragment_cities.*
 
-class CitiesFragment : Fragment(), CitiesObserver {
-    private lateinit var citiesPreferences: SharedPreferences
+class CitiesFragment : Fragment() {
     private lateinit var weatherPreferences: SharedPreferences
+
+    private val model = CitiesViewModel.INSTANCE
 
     private var fragmentChanger: FragmentChanger? = null
     private val adapter by lazy { CitiesAdapter(getCities(), onListItemClickListener) }
@@ -42,6 +42,7 @@ class CitiesFragment : Fragment(), CitiesObserver {
     override fun onAttach(context: Context) {
         initFragmentChanger(context)
         initPreferences(context)
+        initObserver()
         super.onAttach(context)
     }
 
@@ -59,6 +60,13 @@ class CitiesFragment : Fragment(), CitiesObserver {
         super.onViewCreated(view, savedInstanceState)
     }
 
+    private fun initObserver() {
+        val citiesObserver = Observer<List<City>> { cities ->
+            adapter.updateCities(cities)
+        }
+        model.cities.observeForever(citiesObserver)
+    }
+
     override fun onDetach() {
         fragmentChanger = null
         super.onDetach()
@@ -66,15 +74,11 @@ class CitiesFragment : Fragment(), CitiesObserver {
 
     private fun initButton() {
         addCityFloatingButton.setOnClickListener {
-            fragmentChanger?.showDialog(
-                Dialogs.ADD_CITY,
-                listOf(this@CitiesFragment)
-            )
+            fragmentChanger?.showDialog(Dialogs.ADD_CITY)
         }
     }
 
     private fun initPreferences(context: Context) {
-        citiesPreferences = context.getSharedPreferences(Preferences.CITIES, Context.MODE_PRIVATE)
         weatherPreferences = context.getSharedPreferences(Preferences.WEATHER, Context.MODE_PRIVATE)
     }
 
@@ -90,19 +94,7 @@ class CitiesFragment : Fragment(), CitiesObserver {
         citiesRecycler.addItemDecoration(CitiesDecorator(10))
     }
 
-    override fun updateCities() {
-        val cities = getCities()
-        adapter.updateCities(cities)
-    }
-
     private fun getCities(): List<City> {
-        val json = citiesPreferences.getString(Keys.CITIES, "")
-        return if (json.isNullOrBlank()) {
-            listOf()
-        } else {
-            val gson = Gson()
-            val type = object : TypeToken<List<City>>() {}.type
-            gson.fromJson(json, type)
-        }
+        return model.cities.value ?: listOf()
     }
 }

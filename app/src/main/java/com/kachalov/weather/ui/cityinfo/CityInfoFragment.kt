@@ -7,17 +7,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.kachalov.weather.R
 import com.kachalov.weather.constants.Keys
 import com.kachalov.weather.constants.Urls
 import com.kachalov.weather.entities.City
+import com.kachalov.weather.livedata.PressureViewModel
 import kotlinx.android.synthetic.main.fragment_city_info.*
 
 class CityInfoFragment : Fragment() {
+    private val model = PressureViewModel.INSTANCE
     private lateinit var currentCity: City
-    private var showPressure: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,8 +31,24 @@ class CityInfoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initCurrentCity(savedInstanceState)
-        initPressure(savedInstanceState)
+        initPressure()
+        initObserver()
         setViewsData()
+    }
+
+    private fun initObserver() {
+        val pressureObserver = Observer<Boolean> { showPressure ->
+            updatePressure(showPressure)
+        }
+        model.pressure.observe(this, pressureObserver)
+    }
+
+    private fun updatePressure(showPressure: Boolean) {
+        if (showPressure) {
+            setPressureVisibility(View.VISIBLE)
+        } else {
+            setPressureVisibility(View.GONE)
+        }
     }
 
     private fun setViewsData() {
@@ -51,7 +69,7 @@ class CityInfoFragment : Fragment() {
         cityTemp.text = currentCity.temp.toString()
         cityIcon.setImageResource(currentCity.icon)
         pressure.text = currentCity.pressure.toString()
-        setPressureVisibility()
+        initPressure()
         setCityNameOnClickListener()
     }
 
@@ -67,21 +85,13 @@ class CityInfoFragment : Fragment() {
         }
     }
 
-    private fun setPressureVisibility() {
-        if (showPressure) {
-            setPressureVisibility(View.VISIBLE)
-        } else {
-            setPressureVisibility(View.GONE)
-        }
-    }
-
     private fun setPressureVisibility(visibility: Int) {
         pressureLayout.visibility = visibility
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        initPressure(savedInstanceState)
         initCurrentCity(savedInstanceState)
+        initPressure()
         super.onViewStateRestored(savedInstanceState)
     }
 
@@ -93,15 +103,12 @@ class CityInfoFragment : Fragment() {
         }
     }
 
-    private fun initPressure(savedInstanceState: Bundle?) {
-        showPressure = savedInstanceState?.getBoolean(Keys.PRESSURE)
-            ?: arguments?.getBoolean(Keys.PRESSURE)
-                    ?: false
+    private fun initPressure() {
+        updatePressure(model.pressure.value ?: false)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putSerializable(Keys.CURRENT_CITY, currentCity)
-        outState.putBoolean(Keys.PRESSURE, showPressure)
         super.onSaveInstanceState(outState)
     }
 }

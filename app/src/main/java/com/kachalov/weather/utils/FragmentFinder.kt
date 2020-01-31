@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.kachalov.weather.constants.Dialogs
 import com.kachalov.weather.constants.Fragments
-import com.kachalov.weather.observers.CitiesObserver
 import com.kachalov.weather.ui.addcity.AddCityFragment
 import com.kachalov.weather.ui.cities.CitiesFragment
 import com.kachalov.weather.ui.cityinfo.CityInfoFragment
@@ -24,9 +23,9 @@ class FragmentFinder(private val fragmentManager: FragmentManager) {
         return fragment
     }
 
-    fun showDialog(tag: String, observers: List<CitiesObserver>): DialogFragment {
+    fun showDialog(tag: String): DialogFragment {
         return when (tag) {
-            Dialogs.ADD_CITY -> AddCityFragment().apply { observers.forEach { addObserver(it) } }
+            Dialogs.ADD_CITY -> AddCityFragment()
             else -> throw RuntimeException("Invalid dialog tag")
         }
     }
