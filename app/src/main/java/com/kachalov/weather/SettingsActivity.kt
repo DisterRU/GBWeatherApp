@@ -3,7 +3,6 @@ package com.kachalov.weather
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
-import com.kachalov.weather.constants.Codes
 import com.kachalov.weather.constants.Keys
 import com.kachalov.weather.constants.Preferences
 import com.kachalov.weather.livedata.PressureViewModel
@@ -29,7 +28,6 @@ class SettingsActivity : BaseActivity() {
         darkThemeSwitch.isChecked = isDarkTheme()
         darkThemeSwitch.setOnCheckedChangeListener { _, isChecked ->
             setDarkTheme(isChecked)
-            setResult(Codes.THEME_CODE)
             recreate()
         }
 

@@ -9,6 +9,6 @@ class PressureViewModel : ViewModel() {
     }
 
     companion object {
-        val INSTANCE = PressureViewModel()
+        val INSTANCE by lazy { PressureViewModel() }
     }
 }

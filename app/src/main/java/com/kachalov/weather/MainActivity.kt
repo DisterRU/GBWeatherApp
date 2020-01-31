@@ -111,7 +111,7 @@ class MainActivity : BaseActivity(), FragmentChanger {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Codes.THEME_CODE) {
+        if (requestCode == Codes.SETTINGS_CODE) {
             recreate()
         }
     }

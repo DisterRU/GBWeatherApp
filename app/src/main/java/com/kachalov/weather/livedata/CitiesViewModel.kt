@@ -13,6 +13,6 @@ class CitiesViewModel : ViewModel() {
     }
 
     companion object {
-        val INSTANCE = CitiesViewModel()
+        val INSTANCE by lazy { CitiesViewModel() }
     }
 }
