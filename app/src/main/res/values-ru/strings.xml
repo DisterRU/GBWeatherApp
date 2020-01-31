@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="add_city">Добавить город</string>
+    <string name="add_city">Добавить</string>
     <string name="action_settings">Настройки</string>
     <string name="app_name">Погода</string>
     <string name="app_settings">Настройки приложения:</string>
