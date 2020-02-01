@@ -1,6 +1,8 @@
 package com.kachalov.weather
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import com.kachalov.weather.constants.Keys
@@ -29,6 +31,9 @@ class SettingsActivity : BaseActivity() {
         darkThemeSwitch.setOnCheckedChangeListener { _, isChecked ->
             setDarkTheme(isChecked)
             recreate()
+            setResult(Activity.RESULT_OK, Intent().apply {
+                putExtra(Keys.THEME_CHANGED, "")
+            })
         }
 
         pressureSwitch.isChecked = getPressure()

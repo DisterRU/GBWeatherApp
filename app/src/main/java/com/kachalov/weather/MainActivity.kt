@@ -1,5 +1,6 @@
 package com.kachalov.weather
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -37,8 +38,7 @@ class MainActivity : BaseActivity(), FragmentChanger {
     }
 
     private fun initPressureModel() {
-        pressureModel.pressure.value =
-            weatherPreferences?.getBoolean(Keys.PRESSURE, false) ?: false
+        pressureModel.pressure.value = weatherPreferences?.getBoolean(Keys.PRESSURE, false) ?: false
     }
 
     private fun initPreferences() {
@@ -111,8 +111,10 @@ class MainActivity : BaseActivity(), FragmentChanger {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == Codes.SETTINGS_CODE) {
-            recreate()
+        if (requestCode == Codes.SETTINGS_CODE && resultCode == Activity.RESULT_OK) {
+            if (data?.extras?.containsKey(Keys.THEME_CHANGED) == true){
+                recreate()
+            }
         }
     }
 

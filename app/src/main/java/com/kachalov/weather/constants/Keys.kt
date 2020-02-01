@@ -5,4 +5,5 @@ object Keys {
     const val CURRENT_CITY = "current_city"
     const val IS_DARK_THEME = "is_dark_theme"
     const val PRESSURE = "pressure"
+    const val THEME_CHANGED = "theme_changed"
 }
