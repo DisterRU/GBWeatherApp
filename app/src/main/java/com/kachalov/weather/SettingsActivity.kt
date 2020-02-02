@@ -7,11 +7,12 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import com.kachalov.weather.constants.Keys
 import com.kachalov.weather.constants.Preferences
-import com.kachalov.weather.livedata.PressureViewModel
+import com.kachalov.weather.livedata.PressureLiveData
 import kotlinx.android.synthetic.main.activity_settings.*
 
 class SettingsActivity : BaseActivity() {
-    private val pressureModel = PressureViewModel.INSTANCE
+    private val pressureLiveData = PressureLiveData.PRESSURE
+    private var pressure = pressureLiveData.value
     private var pressurePreferences: SharedPreferences? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,9 +32,6 @@ class SettingsActivity : BaseActivity() {
         darkThemeSwitch.setOnCheckedChangeListener { _, isChecked ->
             setDarkTheme(isChecked)
             recreate()
-            setResult(Activity.RESULT_OK, Intent().apply {
-                putExtra(Keys.THEME_CHANGED, "")
-            })
         }
 
         pressureSwitch.isChecked = getPressure()
@@ -46,11 +44,22 @@ class SettingsActivity : BaseActivity() {
         pressurePreferences?.edit()
             ?.putBoolean(Keys.PRESSURE, showPressure)
             ?.apply()
-        pressureModel.pressure.value = showPressure
+        pressure = showPressure
+    }
+
+    override fun onBackPressed() {
+        if (isDarkTheme() != isCurrentThemeDark) {
+            setResult(Activity.RESULT_OK, Intent().apply {
+                putExtra(Keys.THEME_CHANGED, "")
+            })
+            finish()
+        } else {
+            super.onBackPressed()
+        }
     }
 
     private fun getPressure(): Boolean {
-        return pressureModel.pressure.value ?: false
+        return pressure ?: false
     }
 
     override fun onDestroy() {

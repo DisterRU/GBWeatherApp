@@ -9,6 +9,7 @@ import com.kachalov.weather.constants.Preferences
 
 abstract class BaseActivity : AppCompatActivity() {
     private var themePreferences: SharedPreferences? = null
+    private var isCurrentThemeDark = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         initPreferences()
@@ -34,7 +35,7 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     protected fun isDarkTheme(): Boolean {
-        return themePreferences?.getBoolean(Keys.IS_DARK_THEME, true) ?: false
+        return themePreferences?.getBoolean(Keys.IS_DARK_THEME, false) ?: false
     }
 
     protected fun setDarkTheme(isDarkTheme: Boolean) {

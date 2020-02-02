@@ -15,14 +15,14 @@ import com.kachalov.weather.constants.Fragments
 import com.kachalov.weather.constants.Keys
 import com.kachalov.weather.constants.Preferences
 import com.kachalov.weather.entities.City
-import com.kachalov.weather.livedata.CitiesViewModel
+import com.kachalov.weather.livedata.CitiesLiveData
 import com.kachalov.weather.utils.FragmentChanger
 import kotlinx.android.synthetic.main.fragment_cities.*
 
 class CitiesFragment : Fragment() {
     private lateinit var weatherPreferences: SharedPreferences
 
-    private val model = CitiesViewModel.INSTANCE
+    private val cities = CitiesLiveData.CITIES
 
     private var fragmentChanger: FragmentChanger? = null
     private val adapter by lazy { CitiesAdapter(getCities(), onListItemClickListener) }
@@ -64,7 +64,7 @@ class CitiesFragment : Fragment() {
         val citiesObserver = Observer<List<City>> { cities ->
             adapter.updateCities(cities)
         }
-        model.cities.observeForever(citiesObserver)
+        cities.observeForever(citiesObserver)
     }
 
     override fun onDetach() {
@@ -95,6 +95,6 @@ class CitiesFragment : Fragment() {
     }
 
     private fun getCities(): List<City> {
-        return model.cities.value ?: listOf()
+        return cities.value ?: listOf()
     }
 }

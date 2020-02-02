@@ -11,16 +11,13 @@ import com.kachalov.weather.R
 import com.kachalov.weather.constants.Patterns
 import com.kachalov.weather.entities.City
 import com.kachalov.weather.entities.Forecast
-import com.kachalov.weather.livedata.CitiesViewModel
+import com.kachalov.weather.livedata.CitiesLiveData
 import kotlinx.android.synthetic.main.fragment_add_city.*
 import kotlin.random.Random.Default.nextInt
 
 class AddCityFragment : BottomSheetDialogFragment() {
-    private val model = CitiesViewModel.INSTANCE
-
-    private val cities: MutableList<City> by lazy {
-        model.cities.value?.toMutableList() ?: mutableListOf()
-    }
+    private val citiesLiveData = CitiesLiveData.CITIES
+    private val cities = citiesLiveData.value?.toMutableList() ?: mutableListOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,7 +32,7 @@ class AddCityFragment : BottomSheetDialogFragment() {
     }
 
     private fun saveCities() {
-        model.cities.value = cities
+        citiesLiveData.value = cities
     }
 
     private fun initButton() {

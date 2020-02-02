@@ -14,16 +14,16 @@ import com.kachalov.weather.constants.Fragments
 import com.kachalov.weather.constants.Keys
 import com.kachalov.weather.constants.Preferences
 import com.kachalov.weather.entities.City
-import com.kachalov.weather.livedata.CitiesViewModel
-import com.kachalov.weather.livedata.PressureViewModel
+import com.kachalov.weather.livedata.CitiesLiveData
+import com.kachalov.weather.livedata.PressureLiveData
 import com.kachalov.weather.utils.FragmentChanger
 import com.kachalov.weather.utils.FragmentFinder
 
 class MainActivity : BaseActivity(), FragmentChanger {
     private lateinit var fragmentFinder: FragmentFinder
 
-    private val citiesModel = CitiesViewModel.INSTANCE
-    private val pressureModel = PressureViewModel.INSTANCE
+    private val citiesLiveData = CitiesLiveData.CITIES
+    private val pressureLiveData = PressureLiveData.PRESSURE
     private var citiesPreferences: SharedPreferences? = null
     private var weatherPreferences: SharedPreferences? = null
 
@@ -38,7 +38,7 @@ class MainActivity : BaseActivity(), FragmentChanger {
     }
 
     private fun initPressureModel() {
-        pressureModel.pressure.value = weatherPreferences?.getBoolean(Keys.PRESSURE, false) ?: false
+        pressureLiveData.value = weatherPreferences?.getBoolean(Keys.PRESSURE, false) ?: false
     }
 
     private fun initPreferences() {
@@ -47,7 +47,7 @@ class MainActivity : BaseActivity(), FragmentChanger {
     }
 
     private fun initCitiesModel() {
-        citiesModel.cities.value = getCities()
+        citiesLiveData.value = getCities()
     }
 
     private fun getCities(): List<City> {
@@ -62,7 +62,7 @@ class MainActivity : BaseActivity(), FragmentChanger {
     }
 
     private fun clearCities() {
-        citiesModel.cities.value = listOf()
+        citiesLiveData.value = listOf()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -90,7 +90,7 @@ class MainActivity : BaseActivity(), FragmentChanger {
     private fun saveCities() {
         val gson = Gson()
         citiesPreferences?.edit()
-            ?.putString(Keys.CITIES, gson.toJson(citiesModel.cities.value))
+            ?.putString(Keys.CITIES, gson.toJson(citiesLiveData.value))
             ?.apply()
     }
 
@@ -110,12 +110,12 @@ class MainActivity : BaseActivity(), FragmentChanger {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == Codes.SETTINGS_CODE && resultCode == Activity.RESULT_OK) {
-            if (data?.extras?.containsKey(Keys.THEME_CHANGED) == true){
+            if (data?.extras?.containsKey(Keys.THEME_CHANGED) == true) {
                 recreate()
             }
         }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     private fun initFragmentFinder() {
@@ -133,7 +133,7 @@ class MainActivity : BaseActivity(), FragmentChanger {
     }
 
     override fun showDialog(tag: String) {
-        val dialog = fragmentFinder.showDialog(tag)
+        val dialog = fragmentFinder.findDialog(tag)
         dialog.show(supportFragmentManager, tag)
     }
 }

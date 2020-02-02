@@ -23,7 +23,7 @@ class FragmentFinder(private val fragmentManager: FragmentManager) {
         return fragment
     }
 
-    fun showDialog(tag: String): DialogFragment {
+    fun findDialog(tag: String): DialogFragment {
         return when (tag) {
             Dialogs.ADD_CITY -> AddCityFragment()
             else -> throw RuntimeException("Invalid dialog tag")

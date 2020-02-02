@@ -14,11 +14,11 @@ import com.kachalov.weather.R
 import com.kachalov.weather.constants.Keys
 import com.kachalov.weather.constants.Urls
 import com.kachalov.weather.entities.City
-import com.kachalov.weather.livedata.PressureViewModel
+import com.kachalov.weather.livedata.PressureLiveData
 import kotlinx.android.synthetic.main.fragment_city_info.*
 
 class CityInfoFragment : Fragment() {
-    private val model = PressureViewModel.INSTANCE
+    private val pressure = PressureLiveData.PRESSURE
     private lateinit var currentCity: City
 
     override fun onCreateView(
@@ -40,7 +40,7 @@ class CityInfoFragment : Fragment() {
         val pressureObserver = Observer<Boolean> { showPressure ->
             updatePressure(showPressure)
         }
-        model.pressure.observe(this, pressureObserver)
+        pressure.observe(this, pressureObserver)
     }
 
     private fun updatePressure(showPressure: Boolean) {
@@ -68,7 +68,7 @@ class CityInfoFragment : Fragment() {
         cityName.text = currentCity.name
         cityTemp.text = currentCity.temp.toString()
         cityIcon.setImageResource(currentCity.icon)
-        pressure.text = currentCity.pressure.toString()
+        cityPressure.text = currentCity.pressure.toString()
         initPressure()
         setCityNameOnClickListener()
     }
@@ -86,7 +86,7 @@ class CityInfoFragment : Fragment() {
     }
 
     private fun setPressureVisibility(visibility: Int) {
-        pressureLayout.visibility = visibility
+        cityPressureLayout.visibility = visibility
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -104,7 +104,7 @@ class CityInfoFragment : Fragment() {
     }
 
     private fun initPressure() {
-        updatePressure(model.pressure.value ?: false)
+        updatePressure(pressure.value ?: false)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
