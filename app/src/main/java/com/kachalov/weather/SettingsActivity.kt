@@ -1,8 +1,6 @@
 package com.kachalov.weather
 
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import com.kachalov.weather.constants.Keys
@@ -45,17 +43,6 @@ class SettingsActivity : BaseActivity() {
             ?.putBoolean(Keys.PRESSURE, showPressure)
             ?.apply()
         pressure = showPressure
-    }
-
-    override fun onBackPressed() {
-        if (isDarkTheme() != isCurrentThemeDark) {
-            setResult(Activity.RESULT_OK, Intent().apply {
-                putExtra(Keys.THEME_CHANGED, "")
-            })
-            finish()
-        } else {
-            super.onBackPressed()
-        }
     }
 
     private fun getPressure(): Boolean {

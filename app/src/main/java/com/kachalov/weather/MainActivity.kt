@@ -1,6 +1,5 @@
 package com.kachalov.weather
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -110,10 +109,8 @@ class MainActivity : BaseActivity(), FragmentChanger {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == Codes.SETTINGS_CODE && resultCode == Activity.RESULT_OK) {
-            if (data?.extras?.containsKey(Keys.THEME_CHANGED) == true) {
+        if (requestCode == Codes.SETTINGS_CODE) {
                 recreate()
-            }
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
