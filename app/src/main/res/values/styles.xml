@@ -1,21 +1,28 @@
 <resources>
 
-    <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">@color/blueRibbon</item>
+        <item name="bottomSheetDialogTheme">@style/DialogStyle</item>
+        <item name="floatingActionButtonStyle">@style/FloatingButtonStyle</item>
+        <item name="android:textViewStyle">@style/TextViewLight</item>
+        <item name="materialButtonStyle">@style/BlueMaterialButtonStyle</item>
+        <item name="textInputStyle">@style/TextInputStyle</item>
     </style>
 
-    <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+    <style name="AppDarkTheme" parent="Theme.MaterialComponents">
+        <item name="bottomSheetDialogTheme">@style/DialogStyleDark</item>
+        <item name="android:textViewStyle">@style/TextViewDark</item>
+        <item name="materialButtonStyle">@style/BlueMaterialButtonStyle</item>
+        <item name="textInputStyle">@style/TextInputStyle</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="FloatingButtonStyle" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="backgroundTint">@color/blueRibbon</item>
+    </style>
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="TextInputStyle" parent="Widget.Design.TextInputLayout">
+        <item name="hintTextAppearance">@style/CityNameInputHintStyle</item>
+    </style>
 
     <style name="CityNameInputHintStyle" parent="TextAppearance.Design.Hint">
         <item name="android:textSize">16sp</item>
@@ -24,5 +31,23 @@
     <style name="DialogStyle" parent="Theme.Design.Light.BottomSheetDialog">
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowSoftInputMode">adjustResize</item>
+    </style>
+
+    <style name="DialogStyleDark" parent="Theme.Design.BottomSheetDialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+    </style>
+
+    <style name="BlueMaterialButtonStyle" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:backgroundTint">@color/blueRibbon</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="TextViewLight" parent="Widget.AppCompat.TextView">
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+    <style name="TextViewDark" parent="Widget.AppCompat.TextView">
+        <item name="android:textColor">@android:color/white</item>
     </style>
 </resources>

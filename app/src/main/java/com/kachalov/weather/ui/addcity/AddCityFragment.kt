@@ -1,34 +1,23 @@
 package com.kachalov.weather.ui.addcity
 
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import android.widget.Toast
-import androidx.fragment.app.DialogFragment
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.google.android.material.snackbar.Snackbar
 import com.kachalov.weather.R
-import com.kachalov.weather.constants.Keys
-import com.kachalov.weather.constants.Pattern
-import com.kachalov.weather.constants.Preferences
-import com.kachalov.weather.persistence.City
+import com.kachalov.weather.constants.Patterns
+import com.kachalov.weather.entities.City
+import com.kachalov.weather.entities.Forecast
+import com.kachalov.weather.livedata.CitiesLiveData
 import kotlinx.android.synthetic.main.fragment_add_city.*
 import kotlin.random.Random.Default.nextInt
 
 class AddCityFragment : BottomSheetDialogFragment() {
-    private lateinit var preferences: SharedPreferences
-    private lateinit var cities: MutableList<City>
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setStyle(DialogFragment.STYLE_NORMAL, R.style.DialogStyle)
-    }
+    private val citiesLiveData = CitiesLiveData.CITIES
+    private val cities = citiesLiveData.value?.toMutableList() ?: mutableListOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,63 +28,80 @@ class AddCityFragment : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initButton()
-        initEditText()
         super.onViewCreated(view, savedInstanceState)
     }
 
-    override fun onAttach(context: Context) {
-        initCities(context)
-        super.onAttach(context)
-    }
-
-    private fun initCities(context: Context) {
-        preferences = context.getSharedPreferences(Preferences.CITIES, Context.MODE_PRIVATE)
-        val gson = Gson()
-        val json = preferences.getString(Keys.CITIES, "")
-        cities = if (json.isNullOrBlank()) {
-            mutableListOf()
-        } else {
-            val type = object : TypeToken<MutableList<City>>() {}.type
-            gson.fromJson(json, type)
-        }
+    private fun saveCities() {
+        citiesLiveData.value = cities
     }
 
     private fun initButton() {
-        cityNameInput.setOnClickListener {
+        addCityButton.setOnClickListener {
             val cityName = cityNameInput.text.toString()
-            if (cities.none { it.name == cityName }) {
-                val city = City(
-                    name = cityName,
-                    temp = nextInt(0, 30),
-                    icon = when (nextInt(0, 3)) {
-                        0 -> R.drawable.sun
-                        1 -> R.drawable.cloud
-                        else -> R.drawable.rain
-                    },
-                    pressure = nextInt(730, 760)
+            val isValid = validateCityName(cityName)
+
+            if (!isValid) {
+                return@setOnClickListener
+            }
+
+            val isExist = isExistCityName(cityName)
+
+            if (isExist) {
+                return@setOnClickListener
+            }
+
+            val city = City(
+                name = cityName,
+                temp = nextInt(0, 30),
+                icon = when (nextInt(0, 3)) {
+                    0 -> R.drawable.sun
+                    1 -> R.drawable.cloud
+                    else -> R.drawable.rain
+                },
+                pressure = nextInt(730, 760),
+                forecastList = listOf(
+                    Forecast("12.00", R.drawable.sun, 1),
+                    Forecast("15.00", R.drawable.cloud, 2),
+                    Forecast("18.00", R.drawable.rain, 3),
+                    Forecast("21.00", R.drawable.rain, 4),
+                    Forecast("00.00", R.drawable.sun, 5),
+                    Forecast("03.00", R.drawable.cloud, 6),
+                    Forecast("06.00", R.drawable.cloud, 7),
+                    Forecast("09.00", R.drawable.cloud, 8),
+                    Forecast("12.00", R.drawable.sun, 9)
                 )
-                cities.add(city)
-            } else {
-                Toast.makeText(
-                    activity,
-                    "$cityName " + resources.getString(R.string.city_exists),
-                    Toast.LENGTH_LONG
+            )
+            cities.add(city)
+            saveCities()
+            dismiss()
+
+            activity?.let {
+                Snackbar.make(
+                    it.findViewById(R.id.fragment_container),
+                    cityName + " " + resources.getString(R.string.city_added),
+                    Snackbar.LENGTH_SHORT
                 ).show()
             }
-            dismiss()
         }
     }
 
-    private fun initEditText() {
-        cityNameInput.setOnFocusChangeListener { view, hasFocus ->
-            if (!hasFocus) {
-                val text = (view as TextView).text
-                if (!Pattern.CITY_NAME.toRegex().matches(text)) {
-                    cityNameLayout.error = resources.getString(R.string.invalid_city_name)
-                } else {
-                    cityNameLayout.error = null
-                }
-            }
+    private fun isExistCityName(city: String): Boolean {
+        return if (cities.any { it.name == city }) {
+            cityNameLayout.error = city + " " + resources.getString(R.string.city_exists)
+            true
+        } else {
+            cityNameLayout.error = null
+            false
+        }
+    }
+
+    private fun validateCityName(city: String): Boolean {
+        return if (!Patterns.CITY_NAME.toRegex().matches(city)) {
+            cityNameLayout.error = resources.getString(R.string.invalid_city_name)
+            false
+        } else {
+            cityNameLayout.error = null
+            true
         }
     }
 }
