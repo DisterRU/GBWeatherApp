@@ -49,19 +49,19 @@ class MainActivity : BaseActivity(), FragmentChanger {
         citiesLiveData.value = getCities()
     }
 
-    private fun getCities(): List<City> {
+    private fun getCities(): MutableList<City> {
         val json = citiesPreferences?.getString(Keys.CITIES, "")
         return if (json.isNullOrBlank()) {
-            listOf()
+            mutableListOf()
         } else {
             val gson = Gson()
-            val type = object : TypeToken<List<City>>() {}.type
+            val type = object : TypeToken<MutableList<City>>() {}.type
             gson.fromJson(json, type)
         }
     }
 
     private fun clearCities() {
-        citiesLiveData.value = listOf()
+        citiesLiveData.value = mutableListOf()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

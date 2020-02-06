@@ -1,2 +1,2 @@
 include ':app'
-rootProject.name='GBWeatherApp2'
+rootProject.name='GBWeatherApp'

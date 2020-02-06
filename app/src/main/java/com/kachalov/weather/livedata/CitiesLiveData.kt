@@ -7,8 +7,8 @@ import com.kachalov.weather.entities.City
 class CitiesLiveData {
     companion object {
         val CITIES by lazy {
-            MutableLiveData<List<City>>().apply {
-                value = listOf()
+            MutableLiveData<MutableList<City>>().apply {
+                value = mutableListOf()
             }
         }
     }

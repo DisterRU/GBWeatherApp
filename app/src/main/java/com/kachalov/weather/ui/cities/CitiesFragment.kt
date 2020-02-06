@@ -94,7 +94,7 @@ class CitiesFragment : Fragment() {
         citiesRecycler.addItemDecoration(CitiesDecorator(10))
     }
 
-    private fun getCities(): List<City> {
-        return cities.value ?: listOf()
+    private fun getCities(): MutableList<City> {
+        return cities.value ?: mutableListOf()
     }
 }
