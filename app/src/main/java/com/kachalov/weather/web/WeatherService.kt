@@ -10,31 +10,41 @@ import com.kachalov.weather.entities.ForecastHolder
 import com.kachalov.weather.entities.WeatherHolder
 import com.kachalov.weather.livedata.CitiesLiveData
 import kotlinx.coroutines.*
-import java.net.HttpURLConnection
 import java.net.URL
-import java.util.*
+import javax.net.ssl.HttpsURLConnection
+import kotlin.coroutines.CoroutineContext
 import kotlin.math.round
 
-object WeatherService {
+object WeatherService : CoroutineScope {
     private val cities = CitiesLiveData.CITIES
     private val gson by lazy { Gson() }
 
-    suspend fun addCity(cityName: String) {
-        val currentWeather = getCurrentWeather(cityName)
-        val forecasts = getForecasts(cityName)
-        val city = GlobalScope.async {
-            City(
-                name = cityName,
-                icon = parseIcon(currentWeather.weather.first().main),
-                temp = parseTemp(currentWeather.main.temp),
-                pressure = currentWeather.main.pressure,
-                forecastList = forecasts
-            )
+    fun addCity(cityName: String) {
+        GlobalScope.launch(coroutineContext) {
+            val city = getCity(cityName)
+            cities.value?.add(city)
         }
-        cities.value?.add(city.await())
     }
 
-    private suspend fun getCurrentWeather(cityName: String): WeatherHolder {
+    private suspend fun getCity(cityName: String): City {
+        return withContext(coroutineContext) {
+            val weatherDeferred = async { getWeatherAsync(cityName) }
+            val forecastsDeferred = async { getForecasts(cityName) }
+            buildCity(cityName, weatherDeferred.await(), forecastsDeferred.await())
+        }
+    }
+
+    private fun buildCity(name: String, weather: WeatherHolder, forecasts: List<Forecast>): City {
+        return City(
+            name = name,
+            icon = parseIcon(weather.weather.first().main),
+            temp = parseTemp(weather.main.temp),
+            pressure = weather.main.pressure,
+            forecastList = forecasts
+        )
+    }
+
+    private fun getWeatherAsync(cityName: String): WeatherHolder {
         val url = Urls.OWM_WEATHER + Urls.OWM_CITY + cityName + Urls.OWM_API_KEY
         val resultJson = getPage(url)
         return parseToWeatherHolder(resultJson)
@@ -45,43 +55,31 @@ object WeatherService {
         return gson.fromJson(json, type)
     }
 
-    private suspend fun getPage(url: String): String {
-        return withContext(Dispatchers.IO) {
-            val connection = URL(url).openConnection() as HttpURLConnection
-            connection.requestMethod = "GET"
-            connection.readTimeout = 100
-            try {
-                connection.connect()
-                return@withContext connection.inputStream.bufferedReader().readText()
-            } catch (e: Exception) {
-
-            } finally {
-                connection.disconnect()
-            }
-            ""
+    private fun getPage(url: String): String {
+        val connection = URL(url).openConnection() as HttpsURLConnection
+        connection.requestMethod = "GET"
+        try {
+            connection.connect()
+            return connection.inputStream.bufferedReader().readText()
+        } finally {
+            connection.disconnect()
         }
     }
 
     private fun getForecasts(cityName: String): List<Forecast> {
         val url = Urls.OWM_WEATHER + Urls.OWM_FORECAST + cityName + Urls.OWM_API_KEY
-        var resultJson = ""
-        GlobalScope.launch {
-            resultJson = getPage(url)
-        }
-        if (resultJson.isBlank()) {
-            throw RuntimeException("Result Json is empty")
-        }
+        val resultJson = getPage(url)
         return parseToForecasts(resultJson)
     }
 
     private fun parseToForecasts(json: String): List<Forecast> {
         val type = object : TypeToken<ForecastHolder>() {}.type
-        val forecastHolder = gson.fromJson(json, type) as ForecastHolder
+        val forecastHolder = gson.fromJson<ForecastHolder>(json, type)
         return forecastHolder.list.map {
             Forecast(
-                time = parseDate(it.dt),
+                time = parseDate(it.dtTxt),
                 temp = parseTemp(it.main.temp),
-                icon = parseIcon(it.weather.main)
+                icon = parseIcon(it.weather.first().main)
             )
         }
     }
@@ -91,14 +89,18 @@ object WeatherService {
     }
 
     private fun parseTemp(temp: Float): Int {
-        return round(temp + 273.15).toInt()
+        return round(temp - 273.15).toInt()
     }
 
-    private fun parseDate(date: Long): String {
-        val parsedDate = Date(date)
-        val calendar = Calendar.getInstance()
-        calendar.time = parsedDate
-        return "${calendar.get(Calendar.DAY_OF_MONTH)}.${calendar.get(Calendar.MONTH)}/n" +
-                "${calendar.get(Calendar.HOUR_OF_DAY)}:${calendar.get(Calendar.MINUTE)}"
+    private fun parseDate(date: String): String {
+        val dates = date.split("\\D".toRegex())
+        val month = dates[1]
+        val day = dates[2]
+        val hour = dates[3]
+        val minutes = dates[4]
+        return "$day.$month\n$hour:$minutes"
     }
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.IO
 }

@@ -40,7 +40,7 @@ class CityInfoFragment : Fragment() {
         val pressureObserver = Observer<Boolean> { showPressure ->
             updatePressure(showPressure)
         }
-        pressure.observe(this, pressureObserver)
+        pressure.observe(viewLifecycleOwner, pressureObserver)
     }
 
     private fun updatePressure(showPressure: Boolean) {
