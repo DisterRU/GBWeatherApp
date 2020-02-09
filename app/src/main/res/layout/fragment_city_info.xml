@@ -11,7 +11,6 @@
         android:id="@+id/mainDayLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="140dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="@id/forecastRecycler"
         app:layout_constraintEnd_toStartOf="parent"
@@ -22,7 +21,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="@string/today"
+            android:text="@string/now"
             android:textColor="@android:color/white"
             android:textSize="35sp"
             android:textStyle="italic|bold" />
@@ -116,7 +115,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/forecastRecycler"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="300dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

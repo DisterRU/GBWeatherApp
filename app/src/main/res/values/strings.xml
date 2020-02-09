@@ -12,7 +12,7 @@
     <string name="app_settings">App Settings:</string>
     <string name="weather_settings">Weather Settings:</string>
     <string name="show_pressure">Show pressure</string>
-    <string name="today">Today</string>
+    <string name="now">Now</string>
     <string name="wiki_icon" translatable="false">Wiki Icon</string>
     <string name="dark_theme">Dark Theme</string>
     <string name="mm" translatable="false">mm</string>

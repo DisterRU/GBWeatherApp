@@ -12,22 +12,21 @@ import com.kachalov.weather.livedata.CitiesLiveData
 import kotlinx.coroutines.*
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection
-import kotlin.coroutines.CoroutineContext
 import kotlin.math.round
 
-object WeatherService : CoroutineScope {
+object WeatherService {
     private val cities = CitiesLiveData.CITIES
     private val gson by lazy { Gson() }
 
     fun addCity(cityName: String) {
-        GlobalScope.launch(coroutineContext) {
+        GlobalScope.launch {
             val city = getCity(cityName)
             cities.value?.add(city)
         }
     }
 
     private suspend fun getCity(cityName: String): City {
-        return withContext(coroutineContext) {
+        return withContext(Dispatchers.IO) {
             val weatherDeferred = async { getWeatherAsync(cityName) }
             val forecastsDeferred = async { getForecasts(cityName) }
             buildCity(cityName, weatherDeferred.await(), forecastsDeferred.await())
@@ -100,7 +99,4 @@ object WeatherService : CoroutineScope {
         val minutes = dates[4]
         return "$day.$month\n$hour:$minutes"
     }
-
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.IO
 }
