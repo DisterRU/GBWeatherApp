@@ -15,6 +15,7 @@ import com.kachalov.weather.constants.Keys
 import com.kachalov.weather.constants.Urls
 import com.kachalov.weather.entities.City
 import com.kachalov.weather.livedata.PressureLiveData
+import com.kachalov.weather.web.WeatherService
 import kotlinx.android.synthetic.main.fragment_city_info.*
 
 class CityInfoFragment : Fragment() {
@@ -59,7 +60,7 @@ class CityInfoFragment : Fragment() {
     private fun setForecastData() {
         forecastRecycler.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        forecastRecycler.adapter = ForecastAdapter(currentCity.forecastList)
+        forecastRecycler.adapter = ForecastAdapter(currentCity.forecastList ?: listOf())
         forecastRecycler.setHasFixedSize(true)
         forecastRecycler.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.HORIZONTAL))
     }
@@ -101,6 +102,7 @@ class CityInfoFragment : Fragment() {
         } else {
             savedInstanceState.getSerializable(Keys.CURRENT_CITY) as City
         }
+        WeatherService.addForecasts(currentCity)
     }
 
     private fun initPressure() {

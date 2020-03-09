@@ -19,31 +19,36 @@ object WeatherService {
     private val gson by lazy { Gson() }
 
     fun addCity(cityName: String) {
-        GlobalScope.launch {
+        GlobalScope.launch(Dispatchers.IO) {
             val city = getCity(cityName)
             cities.value?.add(city)
         }
     }
 
-    private suspend fun getCity(cityName: String): City {
-        return withContext(Dispatchers.IO) {
-            val weatherDeferred = async { getWeatherAsync(cityName) }
-            val forecastsDeferred = async { getForecasts(cityName) }
-            buildCity(cityName, weatherDeferred.await(), forecastsDeferred.await())
+    fun addForecasts(city: City) {
+        GlobalScope.launch(Dispatchers.IO) {
+            city.forecastList = getForecasts(city.name)
         }
     }
 
-    private fun buildCity(name: String, weather: WeatherHolder, forecasts: List<Forecast>): City {
+    private suspend fun getCity(cityName: String): City {
+        return withContext(Dispatchers.IO) {
+            val weatherDeferred = async { getWeather(cityName) }
+            buildCity(cityName, weatherDeferred.await())
+        }
+    }
+
+    private fun buildCity(name: String, weather: WeatherHolder): City {
         return City(
             name = name,
             icon = parseIcon(weather.weather.first().main),
             temp = parseTemp(weather.main.temp),
             pressure = weather.main.pressure,
-            forecastList = forecasts
+            forecastList = null
         )
     }
 
-    private fun getWeatherAsync(cityName: String): WeatherHolder {
+    private fun getWeather(cityName: String): WeatherHolder {
         val url = Urls.OWM_WEATHER + Urls.OWM_CITY + cityName + Urls.OWM_API_KEY
         val resultJson = getPage(url)
         return parseToWeatherHolder(resultJson)
@@ -65,10 +70,12 @@ object WeatherService {
         }
     }
 
-    private fun getForecasts(cityName: String): List<Forecast> {
-        val url = Urls.OWM_WEATHER + Urls.OWM_FORECAST + cityName + Urls.OWM_API_KEY
-        val resultJson = getPage(url)
-        return parseToForecasts(resultJson)
+    private suspend fun getForecasts(cityName: String): List<Forecast> {
+        return withContext(Dispatchers.IO) {
+            val url = Urls.OWM_WEATHER + Urls.OWM_FORECAST + cityName + Urls.OWM_API_KEY
+            val forecastsJson = getPage(url)
+            parseToForecasts(forecastsJson)
+        }
     }
 
     private fun parseToForecasts(json: String): List<Forecast> {
