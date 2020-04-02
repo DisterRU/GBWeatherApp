@@ -11,6 +11,6 @@
     <string name="enter_the_city">Введите город</string>
     <string name="invalid_city_name">Имя города некорректно</string>
     <string name="show_pressure">Показать давление</string>
-    <string name="today">Сегодня</string>
+    <string name="now">Сейчас</string>
     <string name="weather_settings">Настройки погоды:</string>
 </resources>

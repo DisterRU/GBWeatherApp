@@ -25,6 +25,7 @@ class MainActivity : BaseActivity(), FragmentChanger {
     private val pressureLiveData = PressureLiveData.PRESSURE
     private var citiesPreferences: SharedPreferences? = null
     private var weatherPreferences: SharedPreferences? = null
+    private val gson by lazy { Gson() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,19 +50,19 @@ class MainActivity : BaseActivity(), FragmentChanger {
         citiesLiveData.value = getCities()
     }
 
-    private fun getCities(): List<City> {
+    private fun getCities(): MutableList<City> {
         val json = citiesPreferences?.getString(Keys.CITIES, "")
         return if (json.isNullOrBlank()) {
-            listOf()
+            mutableListOf()
         } else {
             val gson = Gson()
-            val type = object : TypeToken<List<City>>() {}.type
+            val type = object : TypeToken<MutableList<City>>() {}.type
             gson.fromJson(json, type)
         }
     }
 
     private fun clearCities() {
-        citiesLiveData.value = listOf()
+        citiesLiveData.value = mutableListOf()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -87,7 +88,6 @@ class MainActivity : BaseActivity(), FragmentChanger {
     }
 
     private fun saveCities() {
-        val gson = Gson()
         citiesPreferences?.edit()
             ?.putString(Keys.CITIES, gson.toJson(citiesLiveData.value))
             ?.apply()
@@ -110,7 +110,7 @@ class MainActivity : BaseActivity(), FragmentChanger {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == Codes.SETTINGS_CODE) {
-                recreate()
+            recreate()
         }
         super.onActivityResult(requestCode, resultCode, data)
     }

@@ -7,5 +7,5 @@ data class City(
     val temp: Int,
     val icon: Int,
     val pressure: Int,
-    val forecastList: List<Forecast>
+    var forecastList: List<Forecast>?
 ) : Serializable
